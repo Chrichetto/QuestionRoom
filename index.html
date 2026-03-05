@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domande Anonime - Video Loop</title>
+    <style>
+        :root {
+            /* Definizione dei colori estratti dal tuo logo */
+            --orange: #ff9100;
+            --red: #ff3d00;
+            --magenta: #d500f9;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            /* -- AGGIUNTA: Sfondo a gradiente animato -- */
+            background: linear-gradient(135deg, var(--orange), var(--red), var(--magenta), var(--orange));
+            background-size: 400% 400%; /* Aumentiamo la dimensione dello sfondo per far "scorrere" i colori */
+            animation: gradientAnimation 15s ease infinite; /* Applichiamo l'animazione creata sotto */
+        }
+
+        /* -- AGGIUNTA: Definizione dell'animazione del gradiente -- */
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+        }
+
+        .input-box {
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .logo-watermark {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 10px;
+            box-sizing: border-box;
+            resize: none;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            border-color: var(--red);
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            
+            /* -- AGGIUNTA: Lo stesso gradiente animato, ma applicato al bottone -- */
+            background: linear-gradient(135deg, var(--orange), var(--red), var(--magenta), var(--orange));
+            background-size: 200% auto;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            background-position: right center; /* Muove il gradiente al passaggio del mouse */
+        }
+
+        h2 { color: #333; margin-bottom: 5px; }
+        p { color: #666; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo-watermark">
+        <img src="image_13c1cb.png" alt="Logo" style="width:100%">
+    </div>
+    <h2>Chiedi Pure</h2>
+    <p>La tua domanda resterà totalmente anonima.</p>
+    
+    <div class="input-box">
+        <textarea id="questionInput" placeholder="Scrivi qui la tua domanda..."></textarea>
+        <button onclick="sendQuestion()">Invia Domanda</button>
+    </div>
+    
+    <div id="status" style="margin-top:15px; font-size: 0.8rem;"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+    // Configurazione Supabase (da riempire con le tue chiavi)
+    const SUPABASE_URL = 'TUA_URL_SUPABASE'; // <--- INSERISCI QUI LA TUA URL
+    const SUPABASE_KEY = 'TUA_ANON_KEY_SUPABASE'; // <--- INSERISCI QUI LA TUA ANON KEY
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function sendQuestion() {
+        const text = document.getElementById('questionInput').value;
+        const status = document.getElementById('status');
+
+        if (!text) {
+            status.innerText = "Inserisci un testo!";
+            status.style.color = "red";
+            return;
+        }
+
+        // Prova a inserire la domanda nel database
+        try {
+            const { data, error } = await supabase
+                .from('domande_anonime')
+                .insert([{ testo_domanda: text }]);
+
+            if (error) {
+                status.innerText = "Errore nell'invio: " + error.message;
+                status.style.color = "red";
+                console.error("Errore Supabase:", error);
+            } else {
+                status.innerText = "Domanda inviata con successo!";
+                status.style.color = "green";
+                document.getElementById('questionInput').value = ""; // Pulisci l'area di testo
+            }
+        } catch (error) {
+            status.innerText = "Si è verificato un errore inaspettato.";
+            status.style.color = "red";
+            console.error("Errore generale:", error);
+        }
+    }
+</script>
+
+</body>
+</html>
