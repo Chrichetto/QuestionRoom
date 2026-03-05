@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Dashboard</title>
+    <style>
+        :root {
+            --orange: #ff9100; --red: #ff3d00; --magenta: #d500f9;
+        }
+        body {
+            margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--orange), var(--red), var(--magenta), var(--orange));
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .header { text-align: center; color: white; margin-bottom: 30px; }
+        .logo { width: 100px; border-radius: 50%; margin-bottom: 10px; border: 3px solid white; }
+        .domanda-card {
+            background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 100%; max-width: 500px;
+        }
+        .data { font-size: 0.8rem; color: #888; }
+        .btn-refresh {
+            background: white; color: var(--red); border: none; padding: 10px 20px;
+            border-radius: 25px; font-weight: bold; cursor: pointer; margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <img src="https://raw.githubusercontent.com/Chrichetto/QuestionRoom/main/logo_fdv.png" alt="Logo" class="logo">
+    <h1>Dashboard Domande</h1>
+    <button class="btn-refresh" onclick="fetchDomande()">Aggiorna Lista ↻</button>
+</div>
+
+<div id="listaDomande" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+    <p style="color: white;">Caricamento...</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+    const SUPABASE_URL = 'https://qkbdkkzoopgjwmpfxopf.supabase.co'; 
+    const SUPABASE_KEY = 'sb_publishable_qVBhXfldN5ovPYMrWLpu7Q_X54PWOTz'; 
+
+    const supabaseAdminClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function fetchDomande() {
+        const container = document.getElementById('listaDomande');
+        try {
+            const { data, error } = await supabaseAdminClient
+                .from('domande_anonime')
+                .select('*')
+                .order('data_invio', { ascending: false });
+
+            if (error) throw error;
+
+            container.innerHTML = data.length ? '' : '<p style="color: white;">Ancora nessuna domanda.</p>';
+            
+            data.forEach(d => {
+                const date = new Date(d.data_invio).toLocaleString('it-IT');
+                container.innerHTML += `
+                    <div class="domanda-card">
+                        <div class="data">${date}</div>
+                        <div style="margin-top:10px; font-size: 1.1rem;">${d.testo_domanda}</div>
+                    </div>`;
+            });
+        } catch (err) {
+            container.innerHTML = `<p style="color: yellow;">Errore: ${err.message}</p>`;
+        }
+    }
+    fetchDomande();
+</script>
+</body>
+</html>
