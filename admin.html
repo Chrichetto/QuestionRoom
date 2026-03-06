@@ -31,12 +31,59 @@
             background: white; color: var(--red); border: none; padding: 10px 20px;
             border-radius: 25px; font-weight: bold; cursor: pointer; margin-bottom: 20px;
         }
+        /* --- AGGIORNAMENTO: Dimensioni Logo Più Grandi --- */
+        /* --- AGGIORNAMENTO: Cerchio più piccolo --- */
+        /* --- AGGIORNAMENTO: Quadrato Arrotondato (non cerchio) --- */
+        .logo-wrapper {
+            /* Dimensioni compatte, simili al cerchio piccolo */
+            width: 100px;
+            height: 100px;
+            
+            /* Sfondo bianco quasi coprente */
+            background: rgba(255, 255, 255, 0.95); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            /* --- MODIFICA FONDAMENTALE: Arrotondamento angoli --- */
+            /* Non usiamo più 50% (cerchio), ma un valore fisso per 
+               creare un quadrato dai bordi morbidi. 
+               20px è un buon valore per un aspetto pulito e moderno. */
+            border-radius: 20px; 
+            
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Ombra per profondità */
+            border: 3px solid white; /* Bordo netto esterno */
+            
+            /* Assicura che il contenuto non esca dagli angoli arrotondati */
+            overflow: hidden; 
+        }
+
+        .logo {
+            /* Proporzione interna al 80% così il leone riempie 
+               bene lo spazio quadrato senza toccare i bordi */
+            max-width: 100%;
+            max-height: 100%;
+            
+            width: auto;
+            height: auto;
+            border-radius: 0; /* Rimuoviamo il border-radius dal logo stesso */
+            border: none;
+            
+            /* Applichiamo un'ombra leggera direttamente sul PNG per 
+               staccarlo ulteriormente dallo sfondo bianco */
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.1));
+        }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <img src="https://raw.githubusercontent.com/Chrichetto/QuestionRoom/main/logo_fdv.png" alt="Logo" class="logo">
+    <div style="display: flex; justify-content: center;">
+        <div class="logo-wrapper">
+            <img src="https://raw.githubusercontent.com/Chrichetto/QuestionRoom/main/logo_fdv.png" alt="Logo" class="logo">
+        </div>
+    </div>
     <h1>Dashboard Domande</h1>
     <button class="btn-refresh" onclick="fetchDomande()">Aggiorna Lista ↻</button>
 </div>
